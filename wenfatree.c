@@ -215,7 +215,26 @@ int int_declare(int len) {
 }
 
 int write(int len) {
+    memset(temp_name, 0, sizeof(temp_name));
+    for (int i = 6; i < len - 2; i++) {
+        temp_name[i - 6] = equal[i];
+    }
 
+    for (int i = 0; i <= var_num; i++) {
+        if (strcmp(var_name[i], temp_name) == 0) {
+            if (isassign[i] == 0) {
+                return 6;
+            }
+            if (isint[i] == 1) {
+                printf("%s = %d\n", temp_name, (int)var_value[i]);
+                return 0;
+            } else {
+                printf("%s = %lf\n", temp_name, var_value[i]);
+                return 0;
+            }
+        }
+    }
+    return 2;
 }
 
 int main()
@@ -226,11 +245,11 @@ int main()
         memset(equal, 0, sizeof(equal));
         gets(equal);
         int len = strlen(equal);
-        if (equal[len] != '.' || equal[len] != ';') {
+        if (equal[len - 1] != '.' && equal[len - 1] != ';') {
             printf("Error(line %d):lack ';' or '.' at the end.\n", line);
             continue;
         }
-        if (equal[len] == '.') {
+        if (equal[len - 1] == '.') {
             flag = 0;
         }
         //进行语句类型判断：声明、赋值和输出
