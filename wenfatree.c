@@ -8,6 +8,7 @@ char var_name[30][100];
 char temp_name[100];
 double var_value[30];
 int isint[30];
+int isassign[30];
 int var_num = -1;
 double divide(int start, int end, int *errorno);
 int judge_input();
@@ -17,8 +18,15 @@ int int_declare(int len);
 int write(int len);
 
 double divide(int start, int end, int *errorno) {
+    //表达式错误
+    if (start > end) {
+        *errorno = 1;
+        return 1;
+    }
+
     int isbrackets = 0;
     int brackets = 0;
+    
     //遍历查找操作符号
     int i = start;
     //加减
@@ -30,13 +38,18 @@ double divide(int start, int end, int *errorno) {
         if (equal[i] == ')') {
             brackets--;
         }
-        if (brackets == 0 ) {
+        if (brackets == 0) {
             if (equal[i] == '+') {
                 return divide(start, i - 1, errorno) + divide(i + 1, end, errorno);
             } else if (equal[i] == '-' && i - 1 >= start) {
                 return divide(start, i - 1, errorno) - divide(i + 1, end, errorno);
             }
         }
+    }
+    //括号不闭合
+    if (brackets != 0) {
+        *errorno = 1;
+        return 1;
     }
     //乘除
     brackets = 0;
@@ -54,7 +67,14 @@ double divide(int start, int end, int *errorno) {
             if (equal[i] == '*') {
                 return divide(start, i - 1, errorno) * divide(i + 1, end, errorno);
             } else if (equal[i] == '/') {
-                return divide(start, i - 1, errorno) / divide(i + 1, end, errorno);
+                double front = divide(start, i - 1, errorno);
+                double back = divide(i + 1, end, errorno);
+                if (back == 0.0) {
+                    *errorno = 4;
+                    return 1;
+                } else {
+                    return front / back;
+                }
             }
         }
     }
@@ -62,9 +82,30 @@ double divide(int start, int end, int *errorno) {
     if (isbrackets) {
         return divide(start + 1, end - 1, errorno);
     }
-    //数字或变量
-    //暂不处理变量
-    return atof(equal + start);
+    //数字或变量,此时已经是最小单位
+
+    double value = atof(equal + start);
+    if (value == 0 && isalpha(equal[start])) {
+        //判断为变量
+        memset(temp_name, 0, sizeof(temp_name));
+        for (int i = start; i <= end; i++) {
+            temp_name[i - start] = equal[i];
+        }
+
+        for (int i = 0; i <= var_num; i++) {
+            if (strcmp(var_name[i], temp_name) == 0) {
+                //找到已声明的变量
+                if (isassign[i] == 0) {
+                    *errorno = 6;
+                    return 1;
+                }
+                return var_value[i];
+            }
+        }
+    } else {
+        //否则为数字
+        return value;
+    }
 }
 
 int judge_input() {
@@ -118,6 +159,7 @@ int assignment(int len) {
             } else {
                 var_value[var_no] = value;
             }
+            isassign[var_no] = 1;
             printf("调试信息：%s = %lf\n", var_name[var_no], var_value[var_no]);
             return 0;
         }
@@ -184,7 +226,11 @@ int main()
         memset(equal, 0, sizeof(equal));
         gets(equal);
         int len = strlen(equal);
-        if (equal[len - 1] == '.') {
+        if (equal[len] != '.' || equal[len] != ';') {
+            printf("Error(line %d):lack ';' or '.' at the end.\n", line);
+            continue;
+        }
+        if (equal[len] == '.') {
             flag = 0;
         }
         //进行语句类型判断：声明、赋值和输出
@@ -198,6 +244,19 @@ int main()
             errorno = write(len);
         } else {
             errorno = assignment(len);
+        }
+        if (errorno == 1) {
+            printf("Error(line %d):wrong expression.\n", line);
+        } else if (errorno == 2) {
+            printf("Error(line %d):undefined identifier.\n", line);
+        } else if (errorno == 3) {
+            printf("Error(line %d):invalid identifier.\n", line);
+        } else if (errorno == 4) {
+            printf("Error(line %d):divided by zero.\n", line);
+        } else if (errorno == 5) {
+            printf("Error(line %d):repeated definition.\n", line);
+        } else if (errorno == 6) {
+            printf("Error(line %d):unassigned identifier.\n", line);
         }
         line++;
     }
