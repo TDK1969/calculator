@@ -123,16 +123,36 @@ int float_declare(int len) {
 }
 
 int int_declare(int len) {
+    if (isdigit(equal[4])) {
+        return 3;
+    }
+    memset(temp_name, 0, sizeof(temp_name));
+    for (int i = 4; i < len - 1; i++) {
+        if (!isalnum(equal[i])) {
+            return 3;
+        }
+        temp_name[i - 4] = equal[i];
+    }
 
+    for (int i = 0; i <= var_num; i++) {
+        if (strcmp(var_name[i], temp_name) == 0) {
+            return 5;
+        }
+    }
+
+    var_num++;
+    isint[var_num] = 1;
+    strcpy(var_name[var_num], temp_name);
 }
 
 int write(int len) {
-
+    
 }
 
 int main()
 {
     int flag = 1;
+    int line = 1;
     while (flag) {
         gets(equal);
         int len = strlen(equal);
@@ -151,8 +171,7 @@ int main()
         } else {
             errorno = assignment(len);
         }
+        line++;
     }
-    
-    
     return 0;
 }
