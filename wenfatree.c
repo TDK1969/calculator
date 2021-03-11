@@ -9,8 +9,14 @@ char temp_name[100];
 double var_value[30];
 int isint[30];
 int var_num = -1;
+double divide(int start, int end, int *errorno);
+int judge_input();
+int assignment(int len);
+int float_declare(int len);
+int int_declare(int len);
+int write(int len);
 
-double divide(int start, int end) {
+double divide(int start, int end, int *errorno) {
     int isbrackets = 0;
     int brackets = 0;
     //遍历查找操作符号
@@ -26,9 +32,9 @@ double divide(int start, int end) {
         }
         if (brackets == 0 ) {
             if (equal[i] == '+') {
-                return divide(start, i - 1) + divide(i + 1, end);
+                return divide(start, i - 1, errorno) + divide(i + 1, end, errorno);
             } else if (equal[i] == '-' && i - 1 >= start) {
-                return divide(start, i - 1) - divide(i + 1, end);
+                return divide(start, i - 1, errorno) - divide(i + 1, end, errorno);
             }
         }
     }
@@ -46,15 +52,15 @@ double divide(int start, int end) {
         }
         if (brackets == 0) {
             if (equal[i] == '*') {
-                return divide(start, i - 1) * divide(i + 1, end);
+                return divide(start, i - 1, errorno) * divide(i + 1, end, errorno);
             } else if (equal[i] == '/') {
-                return divide(start, i - 1) / divide(i + 1, end);
+                return divide(start, i - 1, errorno) / divide(i + 1, end, errorno);
             }
         }
     }
     //去括号
     if (isbrackets) {
-        return divide(start + 1, end - 1);
+        return divide(start + 1, end - 1, errorno);
     }
     //数字或变量
     //暂不处理变量
@@ -87,17 +93,36 @@ int assignment(int len) {
             equal[x++] = equal[y];
         }
     }
+    //处理去括号后的字符串
+    memset(equal + x, 0, sizeof(equal) - x);
     int j = 0;
+    memset(temp_name, 0, sizeof(temp_name));
     for (j; j < x; j++) {
         if (equal[j] != '=') {
-            var_name[var_num][j] = equal[j];
+            temp_name[j] = equal[j];
         } else {
             break;
         }
     }
-    var_value[var_num] = divide(j + 1, x - 1);
-    printf("调试信息：%s = %lf\n", var_name[var_num], var_value[var_num]);
-    var_num++;    
+    int var_no = 0;
+    for (var_no; var_no <= var_num; var_no++) {
+        if (strcmp(var_name[var_no], temp_name) == 0) {
+            //如果变量名已经声明，则进行赋值
+            int errorno = 0;
+            double value = divide(j + 1, x - 1, &errorno);
+            if (errorno != 0) {
+                return errorno;
+            }
+            if (isint[var_no] == 1) {
+                var_value[var_no] = (int)value;
+            } else {
+                var_value[var_no] = value;
+            }
+            printf("调试信息：%s = %lf\n", var_name[var_no], var_value[var_no]);
+            return 0;
+        }
+    }
+    return 2;  
 }
 
 int float_declare(int len) {
@@ -120,6 +145,7 @@ int float_declare(int len) {
 
     var_num++;
     strcpy(var_name[var_num], temp_name);
+    return 0;
 }
 
 int int_declare(int len) {
@@ -143,10 +169,11 @@ int int_declare(int len) {
     var_num++;
     isint[var_num] = 1;
     strcpy(var_name[var_num], temp_name);
+    return 0;
 }
 
 int write(int len) {
-    
+
 }
 
 int main()
@@ -154,6 +181,7 @@ int main()
     int flag = 1;
     int line = 1;
     while (flag) {
+        memset(equal, 0, sizeof(equal));
         gets(equal);
         int len = strlen(equal);
         if (equal[len - 1] == '.') {
