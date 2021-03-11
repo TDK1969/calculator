@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 char equal[100];
 char var_name[30][100];
+char temp_name[100];
 double var_value[30];
-int var_num;
+int isint[30];
+int var_num = -1;
 
 double divide(int start, int end) {
     int isbrackets = 0;
@@ -58,6 +61,75 @@ double divide(int start, int end) {
     return atof(equal + start);
 }
 
+int judge_input() {
+    if (equal[0] == 'f' && equal[1] == 'l' && equal[2] == 'o' && equal[3] == 'a'\
+        && equal[4] == 't' && equal[5] == ' ') {
+        //float变量声明
+        return 1;
+    } else if (equal[0] == 'w' && equal[1] == 'r' && equal[2] == 'i' && equal[3] == 't'\
+        && equal[4] == 'e' && equal[5] == '(') {
+        //输出指令
+        return 3;
+    } else if (equal[0] == 'i' && equal[1] == 'n' && equal[2] == 't' && equal[3] == ' ') {
+        //int变量声明
+        return 2;
+    } else {
+        //赋值语句
+        return 4;
+    }
+}
+
+int assignment(int len) {
+    //去括号
+    int x = 0, y = 0;
+    for (y; y < len - 1; y++) {
+        if (equal[y] != ' ') {
+            equal[x++] = equal[y];
+        }
+    }
+    int j = 0;
+    for (j; j < x; j++) {
+        if (equal[j] != '=') {
+            var_name[var_num][j] = equal[j];
+        } else {
+            break;
+        }
+    }
+    var_value[var_num] = divide(j + 1, x - 1);
+    printf("调试信息：%s = %lf\n", var_name[var_num], var_value[var_num]);
+    var_num++;    
+}
+
+int float_declare(int len) {
+    if (isdigit(equal[6])) {
+        return 3;
+    }
+    memset(temp_name, 0, sizeof(temp_name));
+    for (int i = 6; i < len - 1; i++) {
+        if (!isalnum(equal[i])) {
+            return 3;
+        }
+        temp_name[i - 6] = equal[i];
+    }
+
+    for (int i = 0; i <= var_num; i++) {
+        if (strcmp(var_name[i], temp_name) == 0) {
+            return 5;
+        }
+    }
+
+    var_num++;
+    strcpy(var_name[var_num], temp_name);
+}
+
+int int_declare(int len) {
+
+}
+
+int write(int len) {
+
+}
+
 int main()
 {
     int flag = 1;
@@ -67,24 +139,18 @@ int main()
         if (equal[len - 1] == '.') {
             flag = 0;
         }
-        //去括号
-        int x = 0, y = 0;
-        for (y; y < len - 1; y++) {
-            if (equal[y] != ' ') {
-                equal[x++] = equal[y];
-            }
+        //进行语句类型判断：声明、赋值和输出
+        int type = judge_input(equal);
+        int errorno = 0;
+        if (type == 1) {
+            errorno = float_declare(len);
+        } else if (type == 2) {
+            errorno = int_declare(len);
+        } else if (type == 3) {
+            errorno = write(len);
+        } else {
+            errorno = assignment(len);
         }
-        int j = 0;
-        for (j; j < x; j++) {
-            if (equal[j] != '=') {
-                var_name[var_num][j] = equal[j];
-            } else {
-                break;
-            }
-        }
-        var_value[var_num] = divide(j + 1, x - 1);
-        printf("%s = %lf\n", var_name[var_num], var_value[var_num]);
-        var_num++;
     }
     
     
