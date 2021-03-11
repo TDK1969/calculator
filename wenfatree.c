@@ -60,26 +60,33 @@ double divide(int start, int end) {
 
 int main()
 {
-    gets(equal);
-    int len = strlen(equal);
-    //去括号
-    int x = 0, y = 0;
-    for (y; y < len; y++) {
-        if (equal[y] != ' ') {
-            equal[x++] = equal[y];
+    int flag = 1;
+    while (flag) {
+        gets(equal);
+        int len = strlen(equal);
+        if (equal[len - 1] == '.') {
+            flag = 0;
         }
-    }
-    int j = 0;
-    for (j; j < x; j++) {
-        if (equal[j] != '=') {
-            var_name[var_num][j] = equal[j];
-        } else {
-            break;
+        //去括号
+        int x = 0, y = 0;
+        for (y; y < len - 1; y++) {
+            if (equal[y] != ' ') {
+                equal[x++] = equal[y];
+            }
         }
+        int j = 0;
+        for (j; j < x; j++) {
+            if (equal[j] != '=') {
+                var_name[var_num][j] = equal[j];
+            } else {
+                break;
+            }
+        }
+        var_value[var_num] = divide(j + 1, x - 1);
+        printf("%s = %lf\n", var_name[var_num], var_value[var_num]);
+        var_num++;
     }
-    var_value[var_num] = divide(j + 1, x - 1);
-    printf("%s = %lf", var_name[var_num], var_value[var_num]);
-    var_num++;
+    
     
     return 0;
 }
