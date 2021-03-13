@@ -5,6 +5,9 @@
 
 char equal[100];
 char var_name[30][100];
+char keyword[3][10] = {
+    "int","float", "write"
+};
 char temp_name[100];
 double var_value[30];
 int isint[30];
@@ -179,6 +182,12 @@ int float_declare(int len) {
         temp_name[i - 6] = equal[i];
     }
 
+    for (int i = 0; i < 3; i++) {
+        if (strcmp(temp_name, keyword[i]) == 0) {
+            return 7;
+        }
+    }
+
     for (int i = 0; i <= var_num; i++) {
         if (strcmp(var_name[i], temp_name) == 0) {
             return 5;
@@ -200,6 +209,12 @@ int int_declare(int len) {
             return 3;
         }
         temp_name[i - 4] = equal[i];
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (strcmp(temp_name, keyword[i]) == 0) {
+            return 7;
+        }
     }
 
     for (int i = 0; i <= var_num; i++) {
@@ -237,6 +252,36 @@ int write(int len) {
     return 2;
 }
 
+int judge_type(int type, int len) {
+    if (type == 1) {
+        return float_declare(len);
+    } else if (type == 2) {
+        return int_declare(len);
+    } else if (type == 3) {
+        return write(len);
+    } else {
+        return assignment(len);
+    }
+}
+
+void judge_error(int line, int errorno) {
+    if (errorno == 1) {
+        printf("Error(line %d):wrong expression.\n", line);
+    } else if (errorno == 2) {
+        printf("Error(line %d):undefined identifier.\n", line);
+    } else if (errorno == 3) {
+        printf("Error(line %d):invalid identifier.\n", line);
+    } else if (errorno == 4) {
+        printf("Error(line %d):divided by zero.\n", line);
+    } else if (errorno == 5) {
+        printf("Error(line %d):repeated definition.\n", line);
+    } else if (errorno == 6) {
+        printf("Error(line %d):unassigned identifier.\n", line);
+    } else if (errorno == 7) {
+        printf("Error(line %d):identifier conflict with keywords.\n", line);
+    }
+}
+
 int main()
 {
     int flag = 1;
@@ -252,31 +297,19 @@ int main()
         if (equal[len - 1] == '.') {
             flag = 0;
         }
+
         //进行语句类型判断：声明、赋值和输出
         int type = judge_input(equal);
         int errorno = 0;
-        if (type == 1) {
-            errorno = float_declare(len);
-        } else if (type == 2) {
-            errorno = int_declare(len);
-        } else if (type == 3) {
-            errorno = write(len);
-        } else {
-            errorno = assignment(len);
+
+        errorno = judge_type(type, len);
+        /*
+        if (errorno != 0) {
+            flag = 0;
         }
-        if (errorno == 1) {
-            printf("Error(line %d):wrong expression.\n", line);
-        } else if (errorno == 2) {
-            printf("Error(line %d):undefined identifier.\n", line);
-        } else if (errorno == 3) {
-            printf("Error(line %d):invalid identifier.\n", line);
-        } else if (errorno == 4) {
-            printf("Error(line %d):divided by zero.\n", line);
-        } else if (errorno == 5) {
-            printf("Error(line %d):repeated definition.\n", line);
-        } else if (errorno == 6) {
-            printf("Error(line %d):unassigned identifier.\n", line);
-        }
+        */
+        judge_error(line, errorno);
+
         line++;
     }
     return 0;
