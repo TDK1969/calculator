@@ -1,0 +1,11 @@
+float a;
+int b;
+a = 2333;
+b = 1234/(a - 2333);
+write(b);
+float aisuhbdfw;
+float uhweifn;
+aisuhbdfw = (2.766-769.1/45)*(10000.2345/(2074-849.78165));
+write(aisuhbdfw);
+uhweifn = (aisuhbdfw+1024.4021)/(1969+1987/666);
+write(uhweifn).

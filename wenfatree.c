@@ -13,6 +13,7 @@ double var_value[30];
 int isint[30];
 int isassign[30];
 int var_num = -1;
+
 double divide(int start, int end, int *errorno);
 int judge_input();
 int assignment(int len);
@@ -163,7 +164,7 @@ int assignment(int len) {
                 var_value[var_no] = value;
             }
             isassign[var_no] = 1;
-            printf("调试信息：%s = %lf\n", var_name[var_no], var_value[var_no]);
+            //printf("调试信息：%s = %lf\n", var_name[var_no], var_value[var_no]);
             return 0;
         }
     }
@@ -279,19 +280,26 @@ void judge_error(int line, int errorno) {
         printf("Error(line %d):unassigned identifier.\n", line);
     } else if (errorno == 7) {
         printf("Error(line %d):identifier conflict with keywords.\n", line);
+        
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    freopen(argv[1], "r", stdin);
+    freopen(argv[2], "w", stdout);
+
+    
     int flag = 1;
     int line = 1;
     while (flag) {
         memset(equal, 0, sizeof(equal));
         gets(equal);
+        
         int len = strlen(equal);
         if (equal[len - 1] != '.' && equal[len - 1] != ';') {
             printf("Error(line %d):lack ';' or '.' at the end.\n", line);
+            line++;
             continue;
         }
         if (equal[len - 1] == '.') {
@@ -312,5 +320,7 @@ int main()
 
         line++;
     }
+    fclose(stdin);
+    fclose(stdout);
     return 0;
 }

@@ -1,0 +1,4 @@
+Error(line 4):divided by zero.
+Error(line 5):unassigned identifier.
+aisuhbdfw = -117.017091
+uhweifn = 0.460138
