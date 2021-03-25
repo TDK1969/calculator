@@ -20,6 +20,8 @@ int assignment(int len);
 int float_declare(int len);
 int int_declare(int len);
 int write(int len);
+void judge_error(int line, int errorno);
+int judge_type(int type, int len);
 
 double divide(int start, int end, int *errorno) {
     //表达式错误
@@ -86,8 +88,8 @@ double divide(int start, int end, int *errorno) {
     if (isbrackets) {
         return divide(start + 1, end - 1, errorno);
     }
-    //数字或变量,此时已经是最小单位
 
+    //数字或变量,此时已经是最小单位
     double value = atof(equal + start);
     if (value == 0 && isalpha(equal[start])) {
         //判断为变量
@@ -113,6 +115,7 @@ double divide(int start, int end, int *errorno) {
 }
 
 int judge_input() {
+    //判断语句类型
     if (equal[0] == 'f' && equal[1] == 'l' && equal[2] == 'o' && equal[3] == 'a'\
         && equal[4] == 't' && equal[5] == ' ') {
         //float变量声明
@@ -172,6 +175,7 @@ int assignment(int len) {
 }
 
 int float_declare(int len) {
+    //实数型变量声明
     if (isdigit(equal[6])) {
         return 3;
     }
@@ -201,6 +205,7 @@ int float_declare(int len) {
 }
 
 int int_declare(int len) {
+    //整型变量声明
     if (isdigit(equal[4])) {
         return 3;
     }
@@ -231,6 +236,7 @@ int int_declare(int len) {
 }
 
 int write(int len) {
+    //对变量的值进行输出
     memset(temp_name, 0, sizeof(temp_name));
     for (int i = 6; i < len - 2; i++) {
         temp_name[i - 6] = equal[i];
@@ -266,6 +272,7 @@ int judge_type(int type, int len) {
 }
 
 void judge_error(int line, int errorno) {
+    //对错误类型进行判断
     if (errorno == 1) {
         printf("Error(line %d):wrong expression.\n", line);
     } else if (errorno == 2) {
@@ -280,12 +287,12 @@ void judge_error(int line, int errorno) {
         printf("Error(line %d):unassigned identifier.\n", line);
     } else if (errorno == 7) {
         printf("Error(line %d):identifier conflict with keywords.\n", line);
-        
     }
 }
 
 int main(int argc, char* argv[])
 {
+    //如果参数数量错误则报错，程序结束
     if (argc != 3) {
         printf("Lack of parameter!\n");
         return 0;
@@ -295,6 +302,7 @@ int main(int argc, char* argv[])
     FILE* fp = freopen(argv[1], "r", stdin);
     freopen(argv[2], "w", stdout);
 
+    //如果输入文件不存在，则报错，程序结束
     if (!fp) {
         printf("file %s does not exist.\n", argv[1]);
     }
@@ -302,9 +310,9 @@ int main(int argc, char* argv[])
     int flag = 1;
     int line = 1;
     while (flag) {
+        //对语句读入并进行处理
         memset(equal, 0, sizeof(equal));
         gets(equal);
-        
         int len = strlen(equal);
         if (equal[len - 1] != '.' && equal[len - 1] != ';') {
             printf("Error(line %d):lack ';' or '.' at the end.\n", line);
@@ -318,9 +326,9 @@ int main(int argc, char* argv[])
         //进行语句类型判断：声明、赋值和输出
         int type = judge_input(equal);
         int errorno = 0;
-
         errorno = judge_type(type, len);
         /*
+        //取消注释则遇到错误停止
         if (errorno != 0) {
             flag = 0;
         }
@@ -329,6 +337,7 @@ int main(int argc, char* argv[])
 
         line++;
     }
+
     fclose(stdin);
     fclose(stdout);
     return 0;
