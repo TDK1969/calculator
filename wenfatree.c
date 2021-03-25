@@ -286,9 +286,18 @@ void judge_error(int line, int errorno) {
 
 int main(int argc, char* argv[])
 {
-    freopen(argv[1], "r", stdin);
+    if (argc != 3) {
+        printf("Lack of parameter!\n");
+        return 0;
+    }
+
+    //输入输出重定向至文件
+    FILE* fp = freopen(argv[1], "r", stdin);
     freopen(argv[2], "w", stdout);
 
+    if (!fp) {
+        printf("file %s does not exist.\n", argv[1]);
+    }
     
     int flag = 1;
     int line = 1;
