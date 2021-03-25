@@ -300,16 +300,25 @@ int main(int argc, char* argv[])
 
     //输入输出重定向至文件
     FILE* fp = freopen(argv[1], "r", stdin);
-    freopen(argv[2], "w", stdout);
-
     //如果输入文件不存在，则报错，程序结束
     if (!fp) {
         printf("file %s does not exist.\n", argv[1]);
     }
+    freopen(argv[2], "w", stdout);
+
+    
+    
     
     int flag = 1;
     int line = 1;
+
     while (flag) {
+        //如果用户忘了在最后一个语句输入'.'，则通过检测文件结尾退出
+        
+        if (feof(fp) != 0) {
+            break;
+        }
+        
         //对语句读入并进行处理
         memset(equal, 0, sizeof(equal));
         gets(equal);
