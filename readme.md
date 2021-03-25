@@ -26,7 +26,11 @@ float uhweifn;
 aisuhbdfw = (2.766-769.1/45)*(10000.2345/(2074-849.78165));
 write(aisuhbdfw);
 uhweifn = (aisuhbdfw+1024.4021)/(1969+1987/666);
-write(uhweifn).
+write(uhweifn);
+int AIQWDIUHPSDCV;
+AIQWDIUHPSDCV = (aisuhbdfw/-90.8167234 + (12+9.16234)*uhweifn)/2021;
+write(AIQWDIUHPSDCV).
+
 
 ## 测试用例3：除零错误测试
 float a;
