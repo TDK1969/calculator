@@ -108,6 +108,8 @@ double divide(int start, int end, int *errorno) {
                 return var_value[i];
             }
         }
+        *errorno = 2;
+        return 1;
     } else {
         //否则为数字
         return value;
