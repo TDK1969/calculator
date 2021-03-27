@@ -139,6 +139,10 @@ int assignment(int len) {
     //去括号
     int x = 0, y = 0;
     for (y; y < len - 1; y++) {
+        if (!isalnum(equal[y]) && equal[y] != ' ' && equal[y] != '+' && equal[y] != '-' \
+        && equal[y] != '*' && equal[y] != '/' && equal[y] != '(' && equal[y] != ')'&& equal[y] != '=') {
+            return 1;
+        }
         if (equal[y] != ' ') {
             equal[x++] = equal[y];
         }
