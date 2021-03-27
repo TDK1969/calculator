@@ -159,6 +159,9 @@ int assignment(int len) {
             break;
         }
     }
+    if (j == x) {
+        return 8;
+    }
     int var_no = 0;
     for (var_no; var_no <= var_num; var_no++) {
         if (strcmp(var_name[var_no], temp_name) == 0) {
@@ -294,6 +297,8 @@ void judge_error(int line, int errorno) {
         printf("Error(line %d):unassigned identifier.\n", line);
     } else if (errorno == 7) {
         printf("Error(line %d):identifier conflict with keywords.\n", line);
+    } else if (errorno == 8) {
+        printf("Error(line %d):invalid instruction.\n", line);
     }
 }
 
